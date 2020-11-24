@@ -13,7 +13,7 @@ Particularly we include in our model the following cross sections:
 - MgX, MgXI and MgXII from [Hasoglu et al. (2014)](https://ui.adsabs.harvard.edu/abs/2014ApJS..214....8H/abstract)
 - SiXII, SiXIII and SiXIV from [Witthoeft et al. (2009)](https://ui.adsabs.harvard.edu/abs/2009ApJS..182..127W/abstract)
 - SXIV, SXV and SXVI from [Witthoeft et al. (2009)](https://ui.adsabs.harvard.edu/abs/2009ApJS..182..127W/abstract)
-- FeXVIII, FeXIX, FeXX, FeXXIV, FeXXV, FeXXVI from [Bautista et al. (2004))(https://ui.adsabs.harvard.edu/abs/2004A%26A...418.1171B/abstract)
+- FeXVIII, FeXIX, FeXX, FeXXIV, FeXXV, FeXXVI from [Bautista et al. (2004)](https://ui.adsabs.harvard.edu/abs/2004A%26A...418.1171B/abstract)
  
 
 OBTAINING IGMabs
