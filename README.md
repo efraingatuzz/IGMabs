@@ -20,12 +20,11 @@ OBTAINING IGMabs
 
 The model can be downloaded from the Github repository at https://github.com/efraingatuzz/IGMabs. The contents of the folder include:
 
-atomic_data/AtomicData.fits  -- atomic database binary fits file. This must reside in the directory atomic_data inside the folder 
-where the model is located.  
-igmabs.f90 -- source code for IGMabs
-lmodel.dat, lmodel_igmabs.dat -- local model definition file needed by xspec.  
-compile.sh -- installation script written on bash.
-README.md -- this file
+- atomic_data/AtomicData.fits  -- atomic database binary fits file. This must reside in the directory atomic_data inside the folder where the model is located.  
+- igmabs.f90 -- source code for IGMabs
+- lmodel.dat, lmodel_igmabs.dat -- local model definition file needed by xspec.  
+- compile.sh -- installation script written on bash.
+- README.md -- this file
 
 INSTALLATION
 
