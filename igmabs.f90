@@ -1,10 +1,10 @@
 ! +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 ! IGMABS
 ! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-! XSPEC local model for highly ionized species absorption
+! XSPEC X-ray absorption model for highly ionized species absorption
+! based on ISMabs (see, for example, Gatuzz, Garcia and Kallman 2020)
+!
 ! Version 1.2 July 2020
-!
-!
 !
 ! Additions to version 1.2
 ! Now the turbulence broadening is done using the "fftw3" package included in HEASOFT
