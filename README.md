@@ -28,9 +28,9 @@ The model can be downloaded from the Github repository at https://github.com/efr
 
 INSTALLATION
 
-You can use the compile.sh file to install the model by doing
+You can use the compile.sh file to install the model by doing (depending on your OS)
 
-sh compile.sh
+sh compile_linux.sh/sh compile_mac.sh
 
 In the  model folder or you can setting up and using this model is as described in the xspec manual:
 
@@ -60,4 +60,12 @@ This package is still being tested. Please contact me with any reports or questi
 
 egatuzz@mpe.mpg.de
 
+New in version 1.3 (Nov 2020): 
+ - The atomic data is now stored in a .fits table with variable length (i.e. the file is smaller). The data is interpolated once when the model is called
+
+New in version 1.2 (Mar 2020): 
+ - Now the turbulence broadening is done using the "fftw3" package included in HEASOFT
+
+New in version 1.1 (Dec 2018): 
+ - Turbulence broadening is applied to the optical depth instead of each cross-section to improve the velocity of the code
 
