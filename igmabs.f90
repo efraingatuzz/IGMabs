@@ -4,6 +4,12 @@
 ! XSPEC X-ray absorption model for highly ionized species absorption
 ! based on ISMabs (see, for example, Gatuzz, Garcia and Kallman 2020)
 !
+! New in version 1.5 (Mar 2024): 
+! - S from Gatuzz et al. (2024a), Ar form Gatuzz et al. (2024b) 
+!
+! Additions to version 1.4
+! - Ar, Ca and and N from Gatuzz et al. (2021) are included 
+!
 ! Additions to version 1.3
 ! - the atomic data is now stored in a .fits table with variable
 !   length (i.e. the file is smaller). The data is interpolated
@@ -40,16 +46,17 @@ subroutine igmabs(ear, ne, param, ifl, photar)
 ! The main routine to call all subroutines
 !
 implicit none
-integer,parameter :: num_param = 29, out_unit=20, nion=27
+integer,parameter :: num_param = 35, out_unit=20, nion=33 
 integer,parameter :: nemod=650000, nnemod=350000 !Number of elements for each ion cross section.
-integer :: ne, ifl, i, size_old_cross
+integer :: ne, ifl, i, size_old_cross, status, iostat 
 double precision :: rshift, emod(1:nemod), coemod(nemod), cion(nion), bener(1:nemod)
 double precision :: optical_depth_convolved(0:nemod),optical_depth(0:nemod)
 double precision :: N_C_4, N_C_5, N_C_6, N_N_5, N_N_6, N_N_7
 double precision :: N_O_6, N_O_7, N_O_8, N_Ne_8, N_Ne_9, N_Ne_10
 double precision :: N_Mg_10, N_Mg_11, N_Mg_12, N_Si_12, N_Si_13, N_Si_14
 double precision :: N_S_14, N_S_15, N_S_16, N_Fe_24, N_Fe_25, N_Fe_26
-double precision :: N_Fe_18,N_Fe_19,N_Fe_20 
+double precision :: N_Fe_18,N_Fe_19,N_Fe_20, N_Ca_18,N_Ca_19,N_Ca_20 
+double precision :: N_Ar_16,N_Ar_17,N_Ar_18 
 double precision :: vturb,zfac,temp1
 double precision :: bxs_restored(0:nion,nemod),bxs_crude(0:nion,nnemod)  
 double precision :: ener_crude(0:nion,nnemod)
@@ -57,8 +64,8 @@ real :: ear(0:ne), param(num_param),photar(ne)
 logical :: startup=.true.
 character (len=40) version
 integer :: zn,ii,atom_header(30,30)
-integer,parameter :: znm=100
-
+integer,parameter :: znm=100 
+character (len=240) :: dir_input_i, dir_input_ii, filename
 
 version='1.3'
  if(startup)then
@@ -73,21 +80,21 @@ version='1.3'
  
 !To read Carbon
 zn=6
-  do ii=zn-2,zn,1 !Ion fractions
+  do ii=zn-2,zn,1 !Ion fractions 
   call read_one_cross_sections_igmabs(atom_header(zn,ii),nnemod,bxs_crude,ener_crude,size_old_cross)
   call interpolate_cross_section_igmabs(bxs_crude,(atom_header(zn,ii)-1),ener_crude,size_old_cross,bener,bxs_restored,zn,ii)
   enddo 
  
 !To read Nitrogen
 zn=7
-  do ii=zn-2,zn,1 !Ion fractions
+  do ii=zn-2,zn,1 !Ion fractions 
   call read_one_cross_sections_igmabs(atom_header(zn,ii),nnemod,bxs_crude,ener_crude,size_old_cross)
   call interpolate_cross_section_igmabs(bxs_crude,(atom_header(zn,ii)-1),ener_crude,size_old_cross,bener,bxs_restored,zn,ii)
   enddo 
  
 !To read Oxygen
 zn=8
-  do ii=zn-2,zn,1 !Ion fractions
+  do ii=zn-2,zn,1 !Ion fractions 
   call read_one_cross_sections_igmabs(atom_header(zn,ii),nnemod,bxs_crude,ener_crude,size_old_cross)
   call interpolate_cross_section_igmabs(bxs_crude,(atom_header(zn,ii)-1),ener_crude,size_old_cross,bener,bxs_restored,zn,ii)
   enddo 
@@ -95,7 +102,7 @@ zn=8
  
 !To read Neon
 zn=10
-  do ii=zn-2,zn,1 !Ion fractions
+  do ii=zn-2,zn,1 !Ion fractions  
   call read_one_cross_sections_igmabs(atom_header(zn,ii),nnemod,bxs_crude,ener_crude,size_old_cross)
   call interpolate_cross_section_igmabs(bxs_crude,(atom_header(zn,ii)-1),ener_crude,size_old_cross,bener,bxs_restored,zn,ii)
   enddo 
@@ -103,7 +110,7 @@ zn=10
  
 !To read Magnesium
 zn=12
-  do ii=zn-2,zn,1 !Ion fractions
+  do ii=zn-2,zn,1 !Ion fractions   
   call read_one_cross_sections_igmabs(atom_header(zn,ii),nnemod,bxs_crude,ener_crude,size_old_cross)
   call interpolate_cross_section_igmabs(bxs_crude,(atom_header(zn,ii)-1),ener_crude,size_old_cross,bener,bxs_restored,zn,ii)
   enddo 
@@ -111,28 +118,46 @@ zn=12
  
 !To read Silicon
 zn=14
-  do ii=zn-2,zn,1 !Ion fractions
+  do ii=zn-2,zn,1 !Ion fractions  
   call read_one_cross_sections_igmabs(atom_header(zn,ii),nnemod,bxs_crude,ener_crude,size_old_cross)
   call interpolate_cross_section_igmabs(bxs_crude,(atom_header(zn,ii)-1),ener_crude,size_old_cross,bener,bxs_restored,zn,ii)
   enddo 
  
+
 !To read Sulfur
 zn=16
-  do ii=zn-2,zn,1 !Ion fractions
+  do ii=zn-2,zn,1 !Ion fractions  
   call read_one_cross_sections_igmabs(atom_header(zn,ii),nnemod,bxs_crude,ener_crude,size_old_cross)
   call interpolate_cross_section_igmabs(bxs_crude,(atom_header(zn,ii)-1),ener_crude,size_old_cross,bener,bxs_restored,zn,ii)
-  enddo 
+  enddo   
+
  
+!To read Ar
+zn=18
+  do ii=zn-2,zn,1 !Ion fractions 
+  call read_one_cross_sections_igmabs(atom_header(zn,ii),nnemod,bxs_crude,ener_crude,size_old_cross)
+  call interpolate_cross_section_igmabs(bxs_crude,(atom_header(zn,ii)-1),ener_crude,size_old_cross,bener,bxs_restored,zn,ii)
+  enddo
+  
+
+!To read Ca
+zn=20
+  do ii=zn-2,zn,1 !Ion fractions 
+  call read_one_cross_sections_igmabs(atom_header(zn,ii),nnemod,bxs_crude,ener_crude,size_old_cross)
+  call interpolate_cross_section_igmabs(bxs_crude,(atom_header(zn,ii)-1),ener_crude,size_old_cross,bener,bxs_restored,zn,ii)
+  enddo
+  
+     
 !To read Iron 1
 zn=26
-  do ii=18,20,1 !Ion fractions
+  do ii=18,20,1 !Ion fractions  
   call read_one_cross_sections_igmabs(atom_header(zn,ii),nnemod,bxs_crude,ener_crude,size_old_cross)
   call interpolate_cross_section_igmabs(bxs_crude,(atom_header(zn,ii)-1),ener_crude,size_old_cross,bener,bxs_restored,zn,ii)
   enddo 
 
 !To read Iron 1
 zn=26
-  do ii=zn-2,zn,1 !Ion fractions
+  do ii=zn-2,zn,1 !Ion fractions 
   call read_one_cross_sections_igmabs(atom_header(zn,ii),nnemod,bxs_crude,ener_crude,size_old_cross)
   call interpolate_cross_section_igmabs(bxs_crude,(atom_header(zn,ii)-1),ener_crude,size_old_cross,bener,bxs_restored,zn,ii)
   enddo 
@@ -140,6 +165,27 @@ zn=26
   startup=.false.  
  endif
 
+
+ 
+
+!!! To print S cross-section !!!
+ !filename= "Sphotoabs.txt" 
+ !write (*,*) filename   
+! open(30,file=filename)
+! write (*,*) 'ERROR: unable to read cross sections from '
+! do i=1,nemod
+! if(bener(i).gt.2400.and.bener(i).lt.2500)then
+ !write(*,*)bener(i),bxs_restored(21,i)
+ !write(*,*)atom_header(16,14),atom_header(16,15),atom_header(16,16)
+ !write(30,*) bener(i),bxs_restored(21,i)
+! endif
+ !write (*,*) 'ERROR: unable to read cross sections from '  
+! enddo
+ !close(30)
+ !!!!!!!!!!!!!!!!!!!!!!!!1
+
+ 
+ 
 
 ! Model parameters
  N_C_4 = param(1)
@@ -163,17 +209,22 @@ zn=26
  N_S_14 = param(19)
  N_S_15 = param(20)
  N_S_16 = param(21)
- N_Fe_18 = param(22)
- N_Fe_19 = param(23)
- N_Fe_20 = param(24)
- N_Fe_24 = param(25)
- N_Fe_25 = param(26)
- N_Fe_26 = param(27)
- vturb = param(28)
- rshift = param(29)
+ N_Ar_16 = param(22)
+ N_Ar_17 = param(23)
+ N_Ar_18 = param(24)
+ N_Ca_18 = param(25)
+ N_Ca_19 = param(26)
+ N_Ca_20 = param(27)  
+ N_Fe_18 = param(28)
+ N_Fe_19 = param(29)
+ N_Fe_20 = param(30)
+ N_Fe_24 = param(31)
+ N_Fe_25 = param(32)
+ N_Fe_26 = param(33)
+ vturb = param(34)
+ rshift = param(35)
  zfac = 1/(1.d0+dble(rshift))
  
-
 
 
  
@@ -183,7 +234,8 @@ call absorption_igmabs(N_C_4, N_C_5, N_C_6, N_N_5, N_N_6, N_N_7, &
 N_O_6, N_O_7, N_O_8, N_Ne_8, N_Ne_9, N_Ne_10, &
 N_Fe_18,N_Fe_19,N_Fe_20, N_Fe_24,N_Fe_25,N_Fe_26,&
 N_Mg_10,N_Mg_11,N_Mg_12, N_Si_12,N_Si_13,N_Si_14,&
-N_S_14,N_S_15,N_S_16,&
+N_S_14,N_S_15,N_S_16,N_Ar_16,N_Ar_17,N_Ar_18,&
+N_Ca_18,N_Ca_19,N_Ca_20,&
 zfac, emod, nemod, optical_depth,bxs_restored,cion,ifl,bener)
  
 !Compute broadening
@@ -229,7 +281,7 @@ subroutine read_atomic_data_header_igmabs(atom_header)
 !
 !
 implicit none
-integer,parameter :: nion=27, out_unit=20
+integer,parameter :: nion=33, out_unit=20
 integer ::   i,  status
 double precision :: z(nion), charge(nion), column_id(nion)
 integer :: atom_header(30,30)
@@ -246,7 +298,7 @@ integer :: felem=1, nulld=0
 logical :: anynull
  character (len=255) :: fgmstr
 external :: fgmstr
-character (len=240) :: local_dir = '/media/efrain/DATA/softwares/modelosXSPEC/igmabs/dev/igmabs.dev'
+character (len=240) :: local_dir = '/media/efrain/DATA/softwares/modelosXSPEC/igmabs/standard/igmabs.v1.4'
  
  
 ! Where do we look for the data?
@@ -321,7 +373,7 @@ subroutine read_one_cross_sections_igmabs(column_number,bnene,xs,ener,nelemm)
 ! <path>/atomic_data/AtomicData.fits
 !
 implicit none
-integer,parameter :: nion=27, out_unit=20
+integer,parameter :: nion=33, out_unit=20
 integer :: bnene,  i, j, status,column_number
 integer :: nemax(0:nion)  
 double precision :: ener(0:nion,bnene), xs(0:nion,bnene) 
@@ -339,7 +391,7 @@ integer :: nulld=0, logical_start(0:nion)
 logical :: anynull
  character (len=255) :: fgmstr
 external :: fgmstr
-character (len=240) :: local_dir = '/media/efrain/DATA/softwares/modelosXSPEC/igmabs/dev/igmabs.dev' 
+character (len=240) :: local_dir = '/media/efrain/DATA/softwares/modelosXSPEC/igmabs/standard/igmabs.v1.4' 
 
 !Number of elements for each ion cross section.
 do i=0,nion
@@ -408,7 +460,7 @@ subroutine interpolate_cross_section_igmabs(xs,j,ener,maxi,bener2,bxs_restored,z
 ! ii --> atomic state (1=neutral, 2=singly ionized, 3=double ionized, etc.)
    implicit none
 
-   integer,parameter :: nene=650000, out_unit=20,nion=27
+   integer,parameter :: nene=650000, out_unit=20,nion=33
    integer :: maxi,   i, j, k, r, zn, ii
    double precision :: stemp, etemp,s ,etemp2 
    double precision :: ener(0:nion,maxi), xs(0:nion,maxi),bxs_restored(0:nion,nene) 
@@ -452,8 +504,9 @@ subroutine interpolate_cross_section_igmabs(xs,j,ener,maxi,bener2,bxs_restored,z
                          call phfit2_b_igmabs(zn,zn-ii+1,1,REAL(bener2(i)),SS,thresh) 
                          s=DBLE(SS*1.d-18)
         endif 
-        
-        bxs_restored(j,i)=s
+
+!Here I add a "+1" to have all cross-sections from 1 to nion        
+        bxs_restored(j+1,i)=s
         
       enddo
 
@@ -474,14 +527,14 @@ subroutine read_cross_sections_igmabs(bnene,xs,ifl)
 ! <path>/atomic_data/AtomicData.fits
 !
 implicit none
-integer,parameter :: nion=27, out_unit=20
+integer,parameter :: nion=33, out_unit=20
 integer :: bnene, ifl, i, j, status
 integer :: nemax(0:nion)
 double precision :: ener(0:nion,bnene), xs(0:nion,bnene)
 character (*), parameter :: fileloc = '/atomic_data/AtomicData.fits'
 character (*), parameter :: igmreadchat = 'igmabs: reading from '
 character (len=255 + 29) :: filename2 ! len(fileloc)
-character (len=240) :: local_dir = '/media/efrain/DATA/softwares/modelosXSPEC/igmabs/dev/igmabs.dev'
+character (len=240) :: local_dir = '/media/efrain/DATA/softwares/modelosXSPEC/igmabs/standard/igmabs.v1.4'
 character (len=255) :: igmabs_root = ''
 character (len=len(igmreadchat)+len(filename2)) :: chatmsg = ''
 integer inunit,readwrite,blocksize
@@ -555,19 +608,15 @@ subroutine absorption_igmabs(N_C_4, N_C_5, N_C_6, N_N_5, N_N_6, N_N_7, &
 N_O_6, N_O_7, N_O_8, N_Ne_8, N_Ne_9, N_Ne_10,  &
 N_Fe_18,N_Fe_19,N_Fe_20, N_Fe_24,N_Fe_25,N_Fe_26,&
 N_Mg_10,N_Mg_11,N_Mg_12, N_Si_12,N_Si_13,N_Si_14,&
-N_S_14,N_S_15,N_S_16,&
-zfac, e1, bnene, coeff, bxs2,cion,ifl,bener)
-
-
- 
-
-
+N_S_14,N_S_15,N_S_16,N_Ar_16,N_Ar_17,N_Ar_18,&
+N_Ca_18,N_Ca_19,N_Ca_20,&
+zfac, e1, bnene, coeff, bxs2,cion,ifl,bener) 
 !
 ! This is routine that calculates the optical depth given the column densities
 ! Finally returns the absorption coefficient exp(-tau)
 !
 implicit none
-integer,parameter :: nion=27, out_unit=20
+integer,parameter :: nion=33, out_unit=20
 integer :: bnene, ifl
 integer :: i, j
 double precision :: tmp, cion(nion) 
@@ -578,10 +627,12 @@ double precision :: bener(0:bnene), bxs2(0:nion,bnene), e1(0:bnene)
 double precision :: tau, coeff(bnene)
 double precision :: N_C_4, N_C_5, N_C_6, N_N_5, N_N_6, N_N_7
 double precision :: N_O_6, N_O_7, N_O_8, N_Ne_8, N_Ne_9, N_Ne_10
-double precision :: N_Fe_18,N_Fe_19,N_Fe_20 
+double precision :: N_Fe_18,N_Fe_19,N_Fe_20, N_Ca_18,N_Ca_19,N_Ca_20 
+double precision :: N_Ar_16,N_Ar_17,N_Ar_18 
 double precision :: N_Mg_10, N_Mg_11, N_Mg_12, N_Si_12, N_Si_13, N_Si_14
 double precision :: N_S_14, N_S_15, N_S_16, N_Fe_24, N_Fe_25, N_Fe_26
 double precision :: zfac
+
 real hphoto, gphoto
 external hphoto, gphoto
 
@@ -599,7 +650,7 @@ external hphoto, gphoto
  cion(10)=N_Ne_8
  cion(11)=N_Ne_9
  cion(12)=N_Ne_10
- cion(13)= N_Mg_10 
+ cion(13)=N_Mg_10 
  cion(14)=N_Mg_11  
  cion(15)=N_Mg_12  
  cion(16)=N_Si_12  
@@ -608,14 +659,21 @@ external hphoto, gphoto
  cion(19)=N_S_14  
  cion(20)=N_S_15  
  cion(21)=N_S_16 
- cion(22)=N_Fe_18 
- cion(23)=N_Fe_19  
- cion(24)=N_Fe_20  
- cion(25)=N_Fe_24  
- cion(26)=N_Fe_25  
- cion(27)=N_Fe_26  
+ cion(22)=N_Ar_16 
+ cion(23)=N_Ar_17  
+ cion(24)=N_Ar_18  
+ cion(25)=N_Ca_18 
+ cion(26)=N_Ca_19  
+ cion(27)=N_Ca_20   
+ cion(28)=N_Fe_18 
+ cion(29)=N_Fe_19  
+ cion(30)=N_Fe_20  
+ cion(31)=N_Fe_24  
+ cion(32)=N_Fe_25  
+ cion(33)=N_Fe_26  
 
 
+ 
 
 !O I Kalpha line is located at 527.37 eV
 !O VII Kalpha line is located at 574.227 eV
@@ -735,7 +793,7 @@ subroutine optical_depth_convolved_igmabs( nemax, bxs2,energy,vturb,cross_sectio
 implicit none
 
  
-integer,parameter :: nion=27, out_unit=20
+integer,parameter :: nion=33, out_unit=20
 integer :: i,nemax,aa
 double precision :: bxs2(0:nemax)
 double precision ::  vturb
