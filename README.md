@@ -85,6 +85,12 @@ This package is still being tested. Please contact me with any reports or questi
 
 egatuzz@mpe.mpg.de
 
+New in version 1.5 (Mar 2024): 
+- S from Gatuzz et al. (2024a), Ar form Gatuzz et al. (2024b) 
+
+New in version 1.4 (Nov 2021): 
+- Ar, Ca and and N from Gatuzz et al. (2021) are included 
+
 New in version 1.3 (Nov 2020): 
  - The atomic data is now stored in a .fits table with variable length (i.e. the file is smaller). The data is interpolated once when the model is called
 
