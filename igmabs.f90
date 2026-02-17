@@ -3,6 +3,11 @@
 ! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 ! XSPEC X-ray absorption model for highly ionized species absorption
 ! based on ISMabs (see, for example, Gatuzz, Garcia and Kallman 2020)
+! Version 1.6 February 2026
+!
+! Additions to version 1.6
+! - We added the "use xsfortran" line to call all fortran routines included in xspec (valid for XSPEC 12.15.1)
+!
 !
 ! New in version 1.5 (Mar 2024): 
 ! - S from Gatuzz et al. (2024a), Ar form Gatuzz et al. (2024b) 
@@ -280,6 +285,7 @@ subroutine read_atomic_data_header_igmabs(atom_header)
 ! on atomic data file
 !
 !
+use xsfortran
 implicit none
 integer,parameter :: nion=33, out_unit=20
 integer ::   i,  status
@@ -296,9 +302,9 @@ integer inunit,readwrite,blocksize
 integer :: hdutype
 integer :: felem=1, nulld=0
 logical :: anynull
- character (len=255) :: fgmstr
-external :: fgmstr
-character (len=240) :: local_dir = '/media/efrain/DATA/softwares/modelosXSPEC/igmabs/standard/igmabs.v1.4'
+! character (len=255) :: fgmstr
+!external :: fgmstr
+character (len=240) :: local_dir = '/media/efrain/DATA/softwares/modelosXSPEC/igmabs/igmabs.v1.6'
  
  
 ! Where do we look for the data?
@@ -372,6 +378,7 @@ subroutine read_one_cross_sections_igmabs(column_number,bnene,xs,ener,nelemm)
 ! the atomic_data/ directory - i.e. it loads
 ! <path>/atomic_data/AtomicData.fits
 !
+use xsfortran
 implicit none
 integer,parameter :: nion=33, out_unit=20
 integer :: bnene,  i, j, status,column_number
@@ -389,9 +396,9 @@ integer inunit,readwrite,blocksize,nelemm,offset
 integer :: hdutype
 integer :: nulld=0, logical_start(0:nion)
 logical :: anynull
- character (len=255) :: fgmstr
-external :: fgmstr
-character (len=240) :: local_dir = '/media/efrain/DATA/softwares/modelosXSPEC/igmabs/standard/igmabs.v1.4' 
+! character (len=255) :: fgmstr
+!external :: fgmstr
+character (len=240) :: local_dir = '/media/efrain/DATA/softwares/modelosXSPEC/igmabs/igmabs.v1.6' 
 
 !Number of elements for each ion cross section.
 do i=0,nion
@@ -526,6 +533,7 @@ subroutine read_cross_sections_igmabs(bnene,xs,ifl)
 ! the atomic_data/ directory - i.e. it loads
 ! <path>/atomic_data/AtomicData.fits
 !
+use xsfortran
 implicit none
 integer,parameter :: nion=33, out_unit=20
 integer :: bnene, ifl, i, j, status
@@ -534,15 +542,15 @@ double precision :: ener(0:nion,bnene), xs(0:nion,bnene)
 character (*), parameter :: fileloc = '/atomic_data/AtomicData.fits'
 character (*), parameter :: igmreadchat = 'igmabs: reading from '
 character (len=255 + 29) :: filename2 ! len(fileloc)
-character (len=240) :: local_dir = '/media/efrain/DATA/softwares/modelosXSPEC/igmabs/standard/igmabs.v1.4'
+character (len=240) :: local_dir = '/media/efrain/DATA/softwares/modelosXSPEC/igmabs/igmabs.v1.6'
 character (len=255) :: igmabs_root = ''
 character (len=len(igmreadchat)+len(filename2)) :: chatmsg = ''
 integer inunit,readwrite,blocksize
 integer :: hdutype,colnum
 integer :: felem=1, nulld=0
 logical :: anynull
-character (len=255) :: fgmstr
-external :: fgmstr
+!character (len=255) :: fgmstr
+!external :: fgmstr
  
 !Number of elements for each ion cross section.
 do i=1,nion
@@ -615,6 +623,7 @@ zfac, e1, bnene, coeff, bxs2,cion,ifl,bener)
 ! This is routine that calculates the optical depth given the column densities
 ! Finally returns the absorption coefficient exp(-tau)
 !
+use xsfortran
 implicit none
 integer,parameter :: nion=33, out_unit=20
 integer :: bnene, ifl
@@ -633,8 +642,8 @@ double precision :: N_Mg_10, N_Mg_11, N_Mg_12, N_Si_12, N_Si_13, N_Si_14
 double precision :: N_S_14, N_S_15, N_S_16, N_Fe_24, N_Fe_25, N_Fe_26
 double precision :: zfac
 
-real hphoto, gphoto
-external hphoto, gphoto
+!real hphoto, gphoto
+!external hphoto, gphoto
 
 
 !Column densities
